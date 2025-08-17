@@ -264,12 +264,47 @@ def main():
     print(f"\n=== Summary ===")
     print(f"Spam: {stats['spam']}, Important: {stats['important']}, Archived: {stats['archived']}, Kept in inbox: {stats['kept']}")
 
+def run_health_server():
+    """Run a simple HTTP server for health checks (required by Render Web Services)."""
+    import threading
+    from http.server import HTTPServer, BaseHTTPRequestHandler
+    
+    class HealthHandler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            if self.path == "/health":
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(b'{"status": "healthy", "service": "gmail-groq-worker"}')
+            else:
+                self.send_response(200)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+                self.wfile.write(b'<h1>Gmail Groq Worker</h1><p>Service is running. <a href="/health">Health Check</a></p>')
+        
+        def log_message(self, format, *args):
+            # Suppress HTTP server logs to keep output clean
+            pass
+    
+    port = int(os.getenv("PORT", 10000))
+    server = HTTPServer(('0.0.0.0', port), HealthHandler)
+    print(f"Health server running on port {port}")
+    server.serve_forever()
+
 if __name__ == "__main__":
     import sys
+    import threading
     
     # Check if we should run once or continuously
     if len(sys.argv) > 1 and sys.argv[1] == "--continuous":
         print("Running in continuous mode (every 10 minutes)...")
+        
+        # Start health server in background thread (for Render Web Service)
+        if os.getenv("RENDER") or os.getenv("PORT"):
+            health_thread = threading.Thread(target=run_health_server, daemon=True)
+            health_thread.start()
+            print("Health server started for cloud deployment")
+        
         while True:
             try:
                 main()

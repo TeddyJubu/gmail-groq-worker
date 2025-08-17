@@ -1,0 +1,12 @@
+services:
+  - type: worker
+    name: gmail-groq-worker
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+    # Background workers don't need port binding
+    # and are perfect for scheduled/continuous tasks
+    repo: https://github.com/TeddyJubu/gmail-groq-worker.git
+    branch: main

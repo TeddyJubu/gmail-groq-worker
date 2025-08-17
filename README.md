@@ -35,13 +35,23 @@ This application is designed to run continuously in the cloud to automatically p
 
 ### Deploy to Render
 
+**Option A: Background Worker (Recommended)**
 1. Go to [Render.com](https://render.com) and sign up
-2. Create a new Web Service from your GitHub repository
+2. Create a new **Background Worker** from your GitHub repository
 3. Use Docker as the runtime
 4. Set environment variables:
    - `GROQ_API_KEY`: Your Groq API key
-5. Upload your `client_secret.json` file
+5. Upload your `client_secret.json` and `token.json` files
 6. Deploy!
+
+**Option B: Web Service (with health check server)**
+1. Go to [Render.com](https://render.com) and sign up
+2. Create a new **Web Service** from your GitHub repository
+3. Use Docker as the runtime
+4. Set environment variables:
+   - `GROQ_API_KEY`: Your Groq API key
+5. Upload your `client_secret.json` and `token.json` files
+6. Deploy! (The service will automatically bind to port 10000 for health checks)
 
 ### Environment Variables
 
