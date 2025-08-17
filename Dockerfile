@@ -22,5 +22,5 @@ ENV PYTHONPATH=/app
 RUN useradd --create-home --shell /bin/bash app && chown -R app:app /app
 USER app
 
-# Command to run the application
-CMD ["python", "gmail_groq_worker.py"]
+# Command to run the application in continuous mode
+CMD ["python", "gmail_groq_worker.py", "--continuous"]

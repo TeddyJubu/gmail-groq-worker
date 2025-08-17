@@ -249,4 +249,22 @@ def main():
     print(f"Spam: {stats['spam']}, Important: {stats['important']}, Archived: {stats['archived']}, Kept in inbox: {stats['kept']}")
 
 if __name__ == "__main__":
-    main()
+    import sys
+    
+    # Check if we should run once or continuously
+    if len(sys.argv) > 1 and sys.argv[1] == "--continuous":
+        print("Running in continuous mode (every 10 minutes)...")
+        while True:
+            try:
+                main()
+                print("Sleeping for 10 minutes...")
+                time.sleep(600)  # 10 minutes
+            except KeyboardInterrupt:
+                print("\nStopping continuous mode...")
+                break
+            except Exception as e:
+                print(f"Error in continuous mode: {e}")
+                print("Sleeping for 10 minutes before retry...")
+                time.sleep(600)
+    else:
+        main()
