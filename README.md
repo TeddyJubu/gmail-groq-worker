@@ -47,13 +47,16 @@ This application is designed to run continuously in the cloud to automatically p
 
 - `GROQ_API_KEY` (required): Your Groq API key for AI inference
 
-### Initial Setup
+### Initial Setup (IMPORTANT - Do this first!)
 
-After deployment, you'll need to complete OAuth authentication:
+Before deploying to the cloud, you MUST complete OAuth authentication locally:
 
-1. Check your application logs for the OAuth URL
-2. Visit the URL to grant Gmail permissions
-3. The `token.json` file will be automatically generated
+1. **Run locally first**: `python setup_auth.py`
+2. **Complete OAuth flow** in your browser when prompted
+3. **Upload the generated `token.json` file** to your cloud service
+4. **Set environment variables** and deploy
+
+⚠️ **Cloud services can't run interactive OAuth flows**, so you must generate the `token.json` file locally first.
 
 ## Local Development
 

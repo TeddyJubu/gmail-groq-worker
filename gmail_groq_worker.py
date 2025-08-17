@@ -21,10 +21,26 @@ def gmail_client():
         creds = Credentials.from_authorized_user_file("token.json", SCOPES)
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+            try:
+                creds.refresh(Request())
+            except Exception as e:
+                print(f"Token refresh failed: {e}")
+                print("Please re-authenticate by running locally first to generate a fresh token.json")
+                raise RuntimeError("Authentication failed - token expired and refresh failed")
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("client_secret.json", SCOPES)
-            creds = flow.run_local_server(port=0)
+            # In cloud environment, we can't run interactive OAuth
+            if not os.path.exists("client_secret.json"):
+                raise RuntimeError("client_secret.json not found. Please upload this file to your cloud service.")
+            
+            print("ERROR: No valid token.json found and running in cloud environment.")
+            print("To fix this:")
+            print("1. Run this script locally first with: python gmail_groq_worker.py")
+            print("2. Complete the OAuth flow in your browser")
+            print("3. Upload the generated token.json file to your cloud service")
+            print("4. Redeploy your application")
+            raise RuntimeError("Authentication required - run locally first to generate token.json")
+        
+        # Save refreshed credentials
         with open("token.json", "w") as token:
             token.write(creds.to_json())
     return build("gmail", "v1", credentials=creds)
